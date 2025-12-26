@@ -3,42 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poop Log Tracker - Track Your Bowel Movements</title>
-    <meta name="description" content="Free private tool to track bowel movements and monitor gut health patterns. All data stored locally in your browser.">  
-    <!-- flatpickr CSS -->
+    <title>Poop Log Tracker</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
-        body {font-family: Arial, Helvetica, sans-serif;max-width: 800px;margin: 40px auto;padding: 20px;background-color: #f7f7f7;color: #333;}
+        body {font-family: Arial, sans-serif;max-width: 800px;margin: 40px auto;padding: 20px;background: #f7f7f7;color: #333;}
         h1 {text-align: center;color: #5d4037;}
         .input-area {background: white;padding: 20px;border-radius: 10px;box-shadow: 0 2px 10px rgba(0,0,0,0.1);margin-bottom: 30px;text-align: center;}
-        .flatpickr-input {padding: 10px;font-size: 16px;border: 1px solid #ccc;border-radius: 5px;width: 260px;cursor: pointer;}
-        button {padding: 10px 20px;font-size: 16px;background-color: #8d6e63;color: white;border: none;border-radius: 5px;cursor: pointer;margin-left: 10px;}
-        button:hover {background-color: #6d4c41;}
-        button.clear {background-color: #e74c3c;margin-top: 20px;}
-        table {width: 100%;border-collapse: collapse;background: white;box-shadow: 0 2px 10px rgba(0,0,0,0.1);}  
+        input {padding: 10px;font-size: 16px;border: 1px solid #ccc;border-radius: 5px;width: 260px;cursor: pointer;}
+        button {padding: 10px 20px;font-size: 16px;background: #8d6e63;color: white;border: none;border-radius: 5px;cursor: pointer;margin-left: 10px;}
+        button:hover {background: #6d4c41;}
+        button.clear {background: #e74c3c;margin-top: 20px;}
+        table {width: 100%;border-collapse: collapse;background: white;box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
         th, td {padding: 12px;text-align: center;border-bottom: 1px solid #ddd;}
-        th {background-color: #8d6e63;color: white;}
-        tr:nth-child(even) {background-color: #f2f2f2;}
-        .no-data {text-align: center;padding: 40px;color: #999;font-size: 18px;}
-        footer {text-align: center;margin-top: 50px;padding: 20px 0;border-top: 1px solid #ddd;font-size: 14px;color: #666;}
-        footer a {margin: 0 10px;color: #8d6e63;text-decoration: none;}
-        footer a:hover {text-decoration: underline;}
-        .ad-space {text-align: center;margin: 30px 0;min-height: 100px;background: #f0f0f0;border: 1px dashed #ccc;display: flex;align-items: center;justify-content: center;color: #999;font-style: italic;}
-        .disclaimer {font-size: 14px;color: #666;text-align: center;margin: 20px 0;padding: 10px;background: #fff9e6;border-radius: 5px;}
+        th {background: #8d6e63;color: white;}
         .section {margin-top: 40px;padding: 20px;background: white;border-radius: 10px;box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
+        footer {text-align: center;margin-top: 50px;font-size: 14px;color: #666;}
+        footer a {margin: 0 10px;color: #8d6e63;}
     </style>
 </head>
 <body>
     <h1>💩 Poop Log Tracker</h1>
-    <p style="text-align:center;font-size:18px;">A free, completely private tool to track your bowel movements and spot patterns for better gut health.</p>
-
-    <!-- 廣告位置 1 -->
-    <div class="ad-space">Advertisement space (Google AdSense will appear here after approval)</div>
+    <p style="text-align:center;">Free private tool to track your bowel movements.</p>
 
     <div class="input-area">
         <label for="poopTime"><strong>Last bowel movement time:</strong></label><br><br>
-        <input type="text" id="poopTime" class="flatpickr-input" placeholder="Click here to pick date and time">
-        <button onclick="addRecord()">Log Entry</button>
+        <input type="text" id="poopTime" placeholder="Click to select date and time">
+        <button onclick="addRecord()">Log</button>
         <br><br>
         <button class="clear" onclick="clearAll()">Clear All Records</button>
     </div>
@@ -47,64 +37,41 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Date & Time</th>  
+                <th>Date & Time</th>
                 <th>Interval from Previous</th>
             </tr>
         </thead>
         <tbody id="tableBody"></tbody>
     </table>
 
-    <!-- 廣告位置 2 -->
-    <div class="ad-space">Advertisement space (Google AdSense will appear here after approval)</div>
-
-    <div class="disclaimer">
-        <strong>Medical Disclaimer:</strong> This tool is for personal tracking only and is not medical advice. Consult a doctor for any health concerns.
-    </div>
-
     <footer>
-        <a href="#about">About</a> |
-        <a href="#privacy">Privacy Policy</a> |
-        <a href="#disclaimer">Medical Disclaimer</a> |
-        <a href="mailto:contact@mypooplog.com">Contact</a>
+        <a href="#about">About</a> | <a href="#privacy">Privacy</a> | <a href="#disclaimer">Disclaimer</a>
     </footer>
 
     <div id="about" class="section">
-        <h2>About Poop Log Tracker</h2>
-        <p>This free web tool helps you track bowel movement frequency to identify patterns related to diet, hydration, stress, or health conditions like IBS or constipation.</p>
-        <p>All data is stored locally in your browser — no servers, no accounts, no sharing.</p>
+        <h2>About</h2>
+        <p>This is a free tool to track bowel movements. Data stored locally in your browser.</p>
     </div>
 
     <div id="privacy" class="section">
         <h2>Privacy Policy</h2>
-        <p>We collect NO personal data. All records are saved only in your browser's localStorage and never leave your device.</p>
-        <p>No cookies · No analytics · No tracking</p>
-        <p>Last updated: December 2025</p>
+        <p>No data collected. Everything stays in your browser.</p>
     </div>
 
     <div id="disclaimer" class="section">
-        <h2>Medical Disclaimer</h2>
-        <p>This tool is not a medical device and provides no diagnosis or treatment. Always consult a healthcare professional for medical advice.</p>
+        <h2>Disclaimer</h2>
+        <p>Not medical advice. Consult a doctor for health issues.</p>
     </div>
 
-    <!-- flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         const STORAGE_KEY = 'poopRecords';
 
-        // 初始化 flatpickr（等 DOM 載入完）
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", () => {
             flatpickr("#poopTime", {
                 enableTime: true,
                 dateFormat: "Y-m-d h:i K",
-                time_24hr: false,
-                minuteIncrement: 1,
-                defaultHour: 12,
-                defaultMinute: 0,
-                locale: {
-                    firstDayOfWeek: 1,
-                    weekdays: {shorthand: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]},
-                    months: {shorthand: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]}
-                }
+                time_24hr: false
             });
         });
 
@@ -113,53 +80,41 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             if (records.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="no-data">No records yet. Start by logging your first entry!</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3">No records yet!</td></tr>';
                 return;
             }
             records.forEach((record, index) => {
                 const tr = document.createElement('tr');
-                const tdIndex = document.createElement('td'); tdIndex.textContent = index + 1; tr.appendChild(tdIndex);
-                const tdTime = document.createElement('td');
-                const date = new Date(record.time);
-                tdTime.textContent = date.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
-                tr.appendChild(tdTime);
-                const tdInterval = document.createElement('td');
-                if (index === records.length - 1) {
-                    tdInterval.textContent = '- (First record)';
-                } else {
-                    const prevTime = new Date(records[index + 1].time);
-                    const diffMs = date - prevTime;
-                    const days = Math.floor(diffMs / 86400000);
-                    const hours = Math.floor((diffMs % 86400000) / 3600000);
-                    tdInterval.textContent = days > 0 ? `${days} day${days > 1 ? 's' : ''} ${hours} hour${hours !== 1 ? 's' : ''}` : `${hours} hour${hours !== 1 ? 's' : ''}`;
-                }
-                tr.appendChild(tdInterval);
+                tr.innerHTML = `<td>${index + 1}</td><td>${new Date(record.time).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true})}</td><td>${index === records.length - 1 ? '-' : calculateInterval(records[index + 1].time, record.time)}</td>`;
                 tbody.appendChild(tr);
             });
         }
 
+        function calculateInterval(prev, curr) {  
+            const diff = new Date(curr) - new Date(prev);
+            const days = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            return days > 0 ? `${days} day${days > 1 ? 's' : ''} ${hours} hour${hours !== 1 ? 's' : ''}` : `${hours} hour${hours !== 1 ? 's' : ''}`;
+        }
+
         function addRecord() {
             const input = document.getElementById('poopTime');
-            const timeStr = input.value;
-            if (!timeStr) {
-                alert('Please select a date and time!');
-                return;
-            }
+            if (!input.value) return alert('Please select time!');
             const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            records.unshift({ time: timeStr });
+            records.unshift({ time: input.value });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
             input.value = '';
             loadRecords();
         }
 
         function clearAll() {
-            if (confirm('Are you sure you want to delete all records?')) {
+            if (confirm('Delete all?')) {
                 localStorage.removeItem(STORAGE_KEY);
                 loadRecords();
             }
         }
 
-        window.onload = loadRecords;
+        loadRecords();
     </script>
 </body>
 </html>
