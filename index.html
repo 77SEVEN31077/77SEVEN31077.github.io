@@ -11,7 +11,7 @@
         body {font-family: Arial, Helvetica, sans-serif;max-width: 800px;margin: 40px auto;padding: 20px;background-color: #f7f7f7;color: #333;}
         h1 {text-align: center;color: #5d4037;}
         .input-area {background: white;padding: 20px;border-radius: 10px;box-shadow: 0 2px 10px rgba(0,0,0,0.1);margin-bottom: 30px;text-align: center;}
-        .flatpickr-input {padding: 10px;font-size: 16px;border: 1px solid #ccc;border-radius: 5px;width: 220px;}
+        .flatpickr-input {padding: 10px;font-size: 16px;border: 1px solid #ccc;border-radius: 5px;width: 250px;}
         button {padding: 10px 20px;font-size: 16px;background-color: #8d6e63;color: white;border: none;border-radius: 5px;cursor: pointer;margin-left: 10px;}
         button:hover {background-color: #6d4c41;}
         button.clear {background-color: #e74c3c;margin-top: 20px;}
@@ -31,12 +31,12 @@
     <h1>💩 Poop Log Tracker</h1>
     <p style="text-align:center;">A simple, private tool to track your bowel movements and improve gut health awareness.</p>
 
-    <!-- 廣告位置 1：表格上方（批准後貼 AdSense 碼） -->
+    <!-- 廣告位置 1 -->
     <div class="ad-space">Advertisement (Google AdSense will appear here after approval)</div>
 
     <div class="input-area">
-        <label for="poopTime">Last bowel movement time:</label>
-        <input type="text" id="poopTime" class="flatpickr-input" placeholder="Click to select date & time">
+        <label for="poopTime">Last bowel movement time:</label><br><br>
+        <input type="text" id="poopTime" class="flatpickr-input" placeholder="Click here to select date and time">
         <button onclick="addRecord()">Log</button>
         <br><br>
         <button class="clear" onclick="clearAll()">Clear All Records</button>
@@ -53,7 +53,7 @@
         <tbody id="tableBody"></tbody>
     </table>
 
-    <!-- 廣告位置 2：表格下方 -->
+    <!-- 廣告位置 2 -->
     <div class="ad-space">Advertisement (Google AdSense will appear here after approval)</div>
 
     <div class="disclaimer">
@@ -67,7 +67,7 @@
         <a href="mailto:your-email@example.com">Contact</a>
     </footer>
 
-    <!-- About, Privacy, Disclaimer 內容（用 anchor 跳轉） -->
+    <!-- About, Privacy, Disclaimer 內容 -->
     <div id="about" style="margin-top:60px;padding:20px;background:white;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
         <h2>About Poop Log Tracker</h2>
         <p>This is a free, completely private web tool designed to help you track your bowel movement frequency. All data is stored only in your browser's local storage — nothing is sent to any server.</p>
@@ -90,11 +90,19 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         const STORAGE_KEY = 'poopRecords';
-        const picker = flatpickr("#poopTime", {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            time_24hr: false,
-            locale: { firstDayOfWeek: 0, weekdays: { shorthand: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"] }, months: { shorthand: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"] } }
+
+        // 等頁面完全載入後初始化 flatpickr
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("#poopTime", {
+                enableTime: true,
+                dateFormat: "Y-m-d h:i K",  // 12小時制帶 AM/PM
+                time_24hr: false,
+                locale: {
+                    firstDayOfWeek: 1,
+                    weekdays: { shorthand: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] },
+                    months: { shorthand: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] }
+                }
+            });
         });
 
         function loadRecords() {
@@ -128,12 +136,13 @@
         }
 
         function addRecord() {
-            const timeStr = picker.input.value;
+            const input = document.getElementById('poopTime');
+            const timeStr = input.value;
             if (!timeStr) { alert('Please select a date and time!'); return; }
             const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            records.unshift({ time: picker.selectedDates[0].toISOString().slice(0,16).replace('T', ' ') });
+            records.unshift({ time: timeStr + ':00' });  // 補秒數避免格式問題
             localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-            picker.clear();
+            input.value = '';
             loadRecords();
         }
 
