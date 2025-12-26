@@ -9,7 +9,7 @@
         body {font-family: Arial, sans-serif;max-width: 800px;margin: 40px auto;padding: 20px;background: #f7f7f7;color: #333;}
         h1 {text-align: center;color: #5d4037;}
         .input-area {background: white;padding: 20px;border-radius: 10px;box-shadow: 0 2px 10px rgba(0,0,0,0.1);margin-bottom: 30px;text-align: center;}
-        input[type="text"] {padding: 10px;font-size: 16px;border: 1px solid #ccc;border-radius: 5px;width: 260px;cursor: pointer;text-align: center;}
+        input[type="text"] {padding: 10px;font-size: 16px;border: 1px solid #ccc;border-radius: 5px;width: 260px;cursor: pointer;text-align: center;display: block;margin: 10px auto;}
         button {padding: 10px 20px;font-size: 16px;background: #8d6e63;color: white;border: none;border-radius: 5px;cursor: pointer;margin-left: 10px;}
         button:hover {background: #6d4c41;}
         button.clear {background: #e74c3c;margin-top: 20px;}
@@ -23,7 +23,6 @@
         footer a {margin: 0 10px;color: #8d6e63;text-decoration: none;}
         .disclaimer {font-size: 14px;color: #666;text-align: center;margin: 20px 0;}
         .ad-space {text-align: center;margin: 40px 0;min-height: 100px;background: #f0f0f0;border: 1px dashed #ccc;display: flex;align-items: center;justify-content: center;color: #999;font-style: italic;}
-        /* 日曆居中 */
         .flatpickr-calendar {margin: 0 auto !important;left: 50% !important;transform: translateX(-50%) !important;}
     </style>
 </head>
@@ -31,10 +30,8 @@
     <h1>💩 Poop Log Tracker</h1>
     <p style="text-align:center;">A simple, private tool to track your bowel movements for better gut health.</p>
 
-    <!-- 廣告預留1 -->
     <div class="ad-space">Advertisement space</div>
 
-    <!-- 輸入區塊（保證出現） -->
     <div class="input-area">
         <strong>Last bowel movement time:</strong><br><br>
         <input type="text" id="poopTime" placeholder="Click here to select date and time">
@@ -43,7 +40,6 @@
         <button class="clear" onclick="clearAll()">Clear All Records</button>
     </div>
 
-    <!-- 表格 -->
     <table id="recordTable">
         <thead>
             <tr>
@@ -55,7 +51,6 @@
         <tbody id="tableBody"></tbody>
     </table>
 
-    <!-- 廣告預留2 -->
     <div class="ad-space">Advertisement space</div>
 
     <div class="disclaimer">
