@@ -9,7 +9,7 @@
         body {font-family: Arial, sans-serif;max-width: 800px;margin: 40px auto;padding: 20px;background: #f7f7f7;color: #333;}
         h1 {text-align: center;color: #5d4037;}
         .input-area {background: white;padding: 20px;border-radius: 10px;box-shadow: 0 2px 10px rgba(0,0,0,0.1);margin-bottom: 30px;text-align: center;}
-        input[type="text"] {padding: 10px;font-size: 16px;border: 1px solid #ccc;border-radius: 5px;width: 260px;cursor: pointer;text-align: center;}
+        input[type="text"] {padding: 10px;font-size: 16px;border: 1px solid #ccc;border-radius: 5px;width: 260px;cursor: pointer;}
         button {padding: 10px 20px;font-size: 16px;background: #8d6e63;color: white;border: none;border-radius: 5px;cursor: pointer;margin-left: 10px;}
         button:hover {background: #6d4c41;}
         button.clear {background: #e74c3c;margin-top: 20px;}
@@ -18,27 +18,19 @@
         th {background: #8d6e63;color: white;}
         tr:nth-child(even) {background: #f2f2f2;}
         .no-data {text-align: center;padding: 40px;color: #999;font-size: 18px;}
-        .section {margin-top: 40px;padding: 20px;background: white;border-radius: 10px;box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
-        footer {text-align: center;margin-top: 50px;font-size: 14px;color: #666;}
-        footer a {margin: 0 10px;color: #8d6e63;text-decoration: none;}
-        /* 日曆居中修復 */
-        .flatpickr-calendar {margin: 0 auto !important;left: 50% !important;transform: translateX(-50%) !important;}
     </style>
 </head>
 <body>
     <h1>💩 Poop Log Tracker</h1>
-    <p style="text-align:center;">A simple, private tool to track your bowel movements for better gut health.</p>
 
-    <!-- 輸入區塊 -->
     <div class="input-area">
-        <strong>Last bowel movement time:</strong><br><br>
-        <input type="text" id="poopTime" placeholder="Click here to select date and time">
+        <label>Last bowel movement time:</label><br><br>
+        <input type="text" id="poopTime" placeholder="Click to select">
         <button onclick="addRecord()">Log</button>
         <br><br>
         <button class="clear" onclick="clearAll()">Clear All Records</button>
     </div>
 
-    <!-- 表格 -->
     <table id="recordTable">
         <thead>
             <tr>
@@ -50,46 +42,14 @@
         <tbody id="tableBody"></tbody>
     </table>
 
-    <!-- 免責聲明 -->
-    <p style="text-align:center;margin:30px 0;font-size:14px;color:#666;">
-        <strong>Disclaimer:</strong> This tool is for personal tracking only and is not medical advice. Consult a doctor for health concerns.
-    </p>
-
-    <!-- Footer -->
-    <footer>
-        <a href="#about">About</a> | <a href="#privacy">Privacy Policy</a> | <a href="#disclaimer">Medical Disclaimer</a>
-    </footer>
-
-    <!-- 內容區塊 -->
-    <div id="about" class="section">
-        <h2>About Poop Log Tracker</h2>
-        <p>This free tool helps you track bowel movement frequency. All data is stored locally in your browser — no servers, no sharing.</p>
-    </div>
-
-    <div id="privacy" class="section">
-        <h2>Privacy Policy</h2>
-        <p>No personal data is collected or shared. Records are saved only in your browser's localStorage.</p>
-        <p>Last updated: December 2025</p>
-    </div>
-
-    <div id="disclaimer" class="section">
-        <h2>Medical Disclaimer</h2>
-        <p>This tool is not a substitute for professional medical advice. Always consult a healthcare professional.</p>
-    </div>
-
-    <!-- flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         const STORAGE_KEY = 'poopRecords';
 
-        // 初始化日曆
         flatpickr("#poopTime", {
             enableTime: true,
             dateFormat: "Y-m-d h:i K",
-            time_24hr: false,
-            locale: {
-                months: {shorthand: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]}
-            }
+            time_24hr: false
         });
 
         function loadRecords() {
@@ -97,49 +57,35 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             if (records.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="no-data">No records yet. Start by logging your first one!</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" class="no-data">No records yet!</td></tr>';
                 return;
             }
             records.forEach((record, index) => {
                 const tr = document.createElement('tr');
-                const tdIndex = document.createElement('td');
-                tdIndex.textContent = index + 1;
-                tr.appendChild(tdIndex);
-                const tdTime = document.createElement('td');
-                const date = new Date(record.time);
-                tdTime.textContent = date.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
-                tr.appendChild(tdTime);
-                const tdInterval = document.createElement('td');
-                if (index === records.length - 1) {
-                    tdInterval.textContent = '- (First record)';
-                } else {
-                    const prevTime = new Date(records[index + 1].time);
-                    const diffMs = date - prevTime;
-                    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    tdInterval.textContent = days > 0 ? `${days} day${days > 1 ? 's' : ''} ${hours} hour${hours !== 1 ? 's' : ''}` : `${hours} hour${hours !== 1 ? 's' : ''}`;
-                }
-                tr.appendChild(tdInterval);
+                tr.innerHTML = `<td>${index + 1}</td><td>${new Date(record.time).toLocaleString()}</td><td>${index === records.length - 1 ? '-' : calculateInterval(records[index + 1].time, record.time)}</td>`;
                 tbody.appendChild(tr);
             });
         }
 
+        function calculateInterval(prev, curr) {
+            const diff = new Date(curr) - new Date(prev);
+            const days = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            return days > 0 ? `${days} day${days > 1 ? 's' : ''} ${hours} hour${hours !== 1 ? 's' : ''}` : `${hours} hour${hours !== 1 ? 's' : ''}`;
+        }
+
         function addRecord() {
             const input = document.getElementById('poopTime');
-            const timeStr = input.value;
-            if (!timeStr) {
-                alert('Please select a date and time!');
-                return;
-            }
+            if (!input.value) return alert('Please select time!');
             const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            records.unshift({ time: timeStr });
+            records.unshift({ time: input.value });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
             input.value = '';
             loadRecords();
         }
 
         function clearAll() {
-            if (confirm('Are you sure you want to delete all records?')) {
+            if (confirm('Delete all?')) {
                 localStorage.removeItem(STORAGE_KEY);
                 loadRecords();
             }
