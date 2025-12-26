@@ -1,146 +1,151 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>排便紀錄日曆</title>
-    
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+    <title>Poop Log Tracker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #calendar-container {
-            background: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 800px;
-        }
-
-        h1 { color: #5D4037; margin-bottom: 10px; }
-
-        /* 自定義事件顏色 (棕色) */
-        .fc-event {
-            background-color: #8B4513 !important;
-            border: none !important;
-            color: white !important;
-            padding: 2px 4px;
-            cursor: pointer;
-        }
-
-        /* 調整日曆標題 */
-        .fc-toolbar-title { font-size: 1.25em !important; color: #5D4037; }
-        
-        /* 彈窗內輸入框樣式 */
-        .swal-input-label { display: block; margin-top: 15px; font-weight: bold; text-align: left; }
+        body {font-family: Arial, sans-serif;max-width: 800px;margin: 40px auto;padding: 20px;background: #f7f7f7;color: #333;}
+        h1 {text-align: center;color: #5d4037;}
+        .input-area {background: white;padding: 20px;border-radius: 10px;box-shadow: 0 2px 10px rgba(0,0,0,0.1);margin-bottom: 30px;text-align: center;}
+        input[type="text"] {padding: 10px;font-size: 16px;border: 1px solid #ccc;border-radius: 5px;width: 260px;cursor: pointer;text-align: center;}
+        button {padding: 10px 20px;font-size: 16px;background: #8d6e63;color: white;border: none;border-radius: 5px;cursor: pointer;margin-left: 10px;}
+        button:hover {background: #6d4c41;}
+        button.clear {background: #e74c3c;margin-top: 20px;}
+        table {width: 100%;border-collapse: collapse;background: white;box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
+        th, td {padding: 12px;text-align: center;border-bottom: 1px solid #ddd;}
+        th {background: #8d6e63;color: white;}
+        tr:nth-child(even) {background: #f2f2f2;}
+        .no-data {text-align: center;padding: 40px;color: #999;font-size: 18px;}
+        .section {margin-top: 40px;padding: 20px;background: white;border-radius: 10px;box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
+        footer {text-align: center;margin-top: 50px;font-size: 14px;color: #666;}
+        footer a {margin: 0 10px;color: #8d6e63;text-decoration: none;}
+        /* 日曆居中修復 */
+        .flatpickr-calendar {margin: 0 auto !important;left: 50% !important;transform: translateX(-50%) !important;}
     </style>
 </head>
 <body>
+    <h1>💩 Poop Log Tracker</h1>
+    <p style="text-align:center;">A simple, private tool to track your bowel movements for better gut health.</p>
 
-    <h1>💩 排便紀錄日曆</h1>
-
-    <div id="calendar-container">
-        <div id="calendar"></div>
+    <!-- 輸入區塊 -->
+    <div class="input-area">
+        <strong>Last bowel movement time:</strong><br><br>
+        <input type="text" id="poopTime" placeholder="Click here to select date and time">
+        <button onclick="addRecord()">Log</button>
+        <br><br>
+        <button class="clear" onclick="clearAll()">Clear All Records</button>
     </div>
 
+    <!-- 表格 -->
+    <table id="recordTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Date & Time</th>
+                <th>Interval from Previous</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <!-- 免責聲明 -->
+    <p style="text-align:center;margin:30px 0;font-size:14px;color:#666;">
+        <strong>Disclaimer:</strong> This tool is for personal tracking only and is not medical advice. Consult a doctor for health concerns.
+    </p>
+
+    <!-- Footer -->
+    <footer>
+        <a href="#about">About</a> | <a href="#privacy">Privacy Policy</a> | <a href="#disclaimer">Medical Disclaimer</a>
+    </footer>
+
+    <!-- 內容區塊 -->
+    <div id="about" class="section">
+        <h2>About Poop Log Tracker</h2>
+        <p>This free tool helps you track bowel movement frequency. All data is stored locally in your browser — no servers, no sharing.</p>
+    </div>
+
+    <div id="privacy" class="section">
+        <h2>Privacy Policy</h2>
+        <p>No personal data is collected or shared. Records are saved only in your browser's localStorage.</p>
+        <p>Last updated: December 2025</p>
+    </div>
+
+    <div id="disclaimer" class="section">
+        <h2>Medical Disclaimer</h2>
+        <p>This tool is not a substitute for professional medical advice. Always consult a healthcare professional.</p>
+    </div>
+
+    <!-- flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendar');
+        const STORAGE_KEY = 'poopRecords';
 
-            // 從瀏覽器本地儲存讀取資料
-            let savedEvents = JSON.parse(localStorage.getItem('poopLogs')) || [];
-
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'zh-tw',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek'
-                },
-                events: savedEvents,
-
-                // 點擊日曆日期
-                dateClick: async function(info) {
-                    const { value: formValues } = await Swal.fire({
-                        title: '新增紀錄',
-                        html:
-                            `<label class="swal-input-label">選擇日期：</label>` +
-                            `<input id="swal-date" type="date" class="swal2-input" value="${info.dateStr}">` +
-                            `<label class="swal-input-label">選擇時間：</label>` +
-                            `<input id="swal-time" type="time" class="swal2-input" value="${getCurrentTime()}">`,
-                        focusConfirm: false,
-                        showCancelButton: true,
-                        confirmButtonText: '儲存',
-                        cancelButtonText: '取消',
-                        preConfirm: () => {
-                            return {
-                                date: document.getElementById('swal-date').value,
-                                time: document.getElementById('swal-time').value
-                            }
-                        }
-                    });
-
-                    if (formValues) {
-                        const newEvent = {
-                            title: '💩 排便',
-                            start: `${formValues.date}T${formValues.time}:00`,
-                            allDay: false
-                        };
-
-                        // 加入日曆
-                        calendar.addEvent(newEvent);
-
-                        // 儲存至本地
-                        savedEvents.push(newEvent);
-                        localStorage.setItem('poopLogs', JSON.stringify(savedEvents));
-                        
-                        Swal.fire({ icon: 'success', title: '已儲存', timer: 1000, showConfirmButton: false });
-                    }
-                },
-
-                // 點擊現有紀錄可刪除
-                eventClick: function(info) {
-                    Swal.fire({
-                        title: '刪除紀錄？',
-                        text: `時間：${info.event.start.toLocaleString()}`,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        confirmButtonText: '刪除',
-                        cancelButtonText: '取消'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // 從日曆移除
-                            info.event.remove();
-                            // 從儲存中移除
-                            savedEvents = savedEvents.filter(e => e.start !== info.event.startStr);
-                            localStorage.setItem('poopLogs', JSON.stringify(savedEvents));
-                        }
-                    });
-                }
-            });
-
-            calendar.render();
-
-            function getCurrentTime() {
-                const now = new Date();
-                return now.getHours().toString().padStart(2, '0') + ':' + 
-                       now.getMinutes().toString().padStart(2, '0');
+        // 初始化日曆
+        flatpickr("#poopTime", {
+            enableTime: true,
+            dateFormat: "Y-m-d h:i K",
+            time_24hr: false,
+            locale: {
+                months: {shorthand: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]}
             }
         });
-    </script>
 
+        function loadRecords() {
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            if (records.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="no-data">No records yet. Start by logging your first one!</td></tr>';
+                return;
+            }
+            records.forEach((record, index) => {
+                const tr = document.createElement('tr');
+                const tdIndex = document.createElement('td');
+                tdIndex.textContent = index + 1;
+                tr.appendChild(tdIndex);
+                const tdTime = document.createElement('td');
+                const date = new Date(record.time);
+                tdTime.textContent = date.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
+                tr.appendChild(tdTime);
+                const tdInterval = document.createElement('td');
+                if (index === records.length - 1) {
+                    tdInterval.textContent = '- (First record)';
+                } else {
+                    const prevTime = new Date(records[index + 1].time);
+                    const diffMs = date - prevTime;
+                    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    tdInterval.textContent = days > 0 ? `${days} day${days > 1 ? 's' : ''} ${hours} hour${hours !== 1 ? 's' : ''}` : `${hours} hour${hours !== 1 ? 's' : ''}`;
+                }
+                tr.appendChild(tdInterval);
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addRecord() {
+            const input = document.getElementById('poopTime');
+            const timeStr = input.value;
+            if (!timeStr) {
+                alert('Please select a date and time!');
+                return;
+            }
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            records.unshift({ time: timeStr });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            input.value = '';
+            loadRecords();
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to delete all records?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                loadRecords();
+            }
+        }
+
+        loadRecords();
+    </script>
 </body>
 </html>
