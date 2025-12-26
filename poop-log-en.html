@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poop Log Tracker</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+        h1 {text-align: center;color: #5d4037;}
+        .input-area {background: white;padding: 20px;border-radius: 10px;box-shadow: 0 2px 10px rgba(0,0,0,0.1);margin-bottom: 30px;text-align: center;}
+        input[type="datetime-local"] {padding: 10px;font-size: 16px;border: 1px solid #ccc;border-radius: 5px;}
+        button {padding: 10px 20px;font-size: 16px;background-color: #8d6e63;color: white;border: none;border-radius: 5px;cursor: pointer;margin-left: 10px;}
+        button:hover {background-color: #6d4c41;}
+        button.clear {background-color: #e74c3c;margin-top: 20px;}
+        table {width: 100%;border-collapse: collapse;background: white;box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
+        th, td {padding: 12px;text-align: center;border-bottom: 1px solid #ddd;}
+        th {background-color: #8d6e63;color: white;}
+        tr:nth-child(even) {background-color: #f2f2f2;}
+        .no-data {text-align: center;padding: 40px;color: #999;font-size: 18px;}
+    </style>
+</head>
+<body>
+    <h1>💩 Poop Log Tracker</h1>
+
+    <div class="input-area">
+        <label for="poopTime">Last bowel movement time:</label>
+        <input type="datetime-local" id="poopTime">
+        <button onclick="addRecord()">Log</button>
+        <br><br>
+        <button class="clear" onclick="clearAll()">Clear All Records</button>
+    </div>
+
+    <table id="recordTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Date & Time</th>
+                <th>Interval from Previous</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <script>
+        const STORAGE_KEY = 'poopRecords';
+
+        function loadRecords() {
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            if (records.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="no-data">No records yet. Start by logging your first one!</td></tr>';
+                return;
+            }
+
+            records.forEach((record, index) => {
+                const tr = document.createElement('tr');
+
+                // #
+                const tdIndex = document.createElement('td');
+                tdIndex.textContent = index + 1;
+                tr.appendChild(tdIndex);
+
+                // Date & Time - 強制用英文格式顯示
+                const tdTime = document.createElement('td');
+                const date = new Date(record.time);
+                tdTime.textContent = date.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true
+                });
+                tr.appendChild(tdTime);
+
+                // Interval
+                const tdInterval = document.createElement('td');
+                if (index === records.length - 1) {
+                    tdInterval.textContent = '- (First record)';
+                } else {
+                    const prevTime = new Date(records[index + 1].time);
+                    const diffMs = date - prevTime;
+                    const days = Math.floor(diffMs / (86400000));
+                    const hours = Math.floor((diffMs % 86400000) / 3600000);
+                    if (days > 0) {
+                        tdInterval.textContent = `${days} day${days > 1 ? 's' : ''} ${hours} hour${hours !== 1 ? 's' : ''}`;
+                    } else {
+                        tdInterval.textContent = `${hours} hour${hours !== 1 ? 's' : ''}`;
+                    }
+                }
+                tr.appendChild(tdInterval);
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addRecord() {
+            const input = document.getElementById('poopTime');
+            const timeStr = input.value;
+            if (!timeStr) {
+                alert('Please select a date and time!');
+                return;
+            }
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            records.unshift({ time: timeStr });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            input.value = '';
+            loadRecords();
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to delete all records?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                loadRecords();
+            }
+        }
+
+        window.onload = loadRecords;
+    </script>
+</body>
+</html>
