@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poop Log Tracker - Track Your Bowel Movements</title>
+    <meta name="description" content="Free and private poop log tracker to monitor your bowel movement habits for better gut health.">
+    <!-- flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body {font-family: Arial, Helvetica, sans-serif;max-width: 800px;margin: 40px auto;padding: 20px;background-color: #f7f7f7;color: #333;}
+        h1 {text-align: center;color: #5d4037;}
+        .input-area {background: white;padding: 20px;border-radius: 10px;box-shadow: 0 2px 10px rgba(0,0,0,0.1);margin-bottom: 30px;text-align: center;}
+        .flatpickr-input {padding: 10px;font-size: 16px;border: 1px solid #ccc;border-radius: 5px;width: 220px;}
+        button {padding: 10px 20px;font-size: 16px;background-color: #8d6e63;color: white;border: none;border-radius: 5px;cursor: pointer;margin-left: 10px;}
+        button:hover {background-color: #6d4c41;}
+        button.clear {background-color: #e74c3c;margin-top: 20px;}
+        table {width: 100%;border-collapse: collapse;background: white;box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
+        th, td {padding: 12px;text-align: center;border-bottom: 1px solid #ddd;}
+        th {background-color: #8d6e63;color: white;}
+        tr:nth-child(even) {background-color: #f2f2f2;}
+        .no-data {text-align: center;padding: 40px;color: #999;font-size: 18px;}
+        footer {text-align: center;margin-top: 50px;font-size: 14px;color: #666;}
+        footer a {margin: 0 10px;color: #8d6e63;text-decoration: none;}
+        footer a:hover {text-decoration: underline;}
+        .ad-space {text-align: center;margin: 30px 0;height: 100px;background: #eee;border: 1px dashed #ccc;display: flex;align-items: center;justify-content: center;color: #999;font-style: italic;}
+        .disclaimer {font-size: 14px;color: #666;text-align: center;margin: 20px 0;}
+    </style>
+</head>
+<body>
+    <h1>💩 Poop Log Tracker</h1>
+    <p style="text-align:center;">A simple, private tool to track your bowel movements and improve gut health awareness.</p>
+
+    <!-- 廣告位置 1：表格上方（批准後貼 AdSense 碼） -->
+    <div class="ad-space">Advertisement (Google AdSense will appear here after approval)</div>
+
+    <div class="input-area">
+        <label for="poopTime">Last bowel movement time:</label>
+        <input type="text" id="poopTime" class="flatpickr-input" placeholder="Click to select date & time">
+        <button onclick="addRecord()">Log</button>
+        <br><br>
+        <button class="clear" onclick="clearAll()">Clear All Records</button>
+    </div>
+
+    <table id="recordTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Date & Time</th>
+                <th>Interval from Previous</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <!-- 廣告位置 2：表格下方 -->
+    <div class="ad-space">Advertisement (Google AdSense will appear here after approval)</div>
+
+    <div class="disclaimer">
+        <strong>Disclaimer:</strong> This tool is for personal tracking purposes only and is not medical advice. Please consult a healthcare professional for any health concerns.
+    </div>
+
+    <footer>
+        <a href="#about">About</a> |
+        <a href="#privacy">Privacy Policy</a> |
+        <a href="#disclaimer">Disclaimer</a> |
+        <a href="mailto:your-email@example.com">Contact</a>
+    </footer>
+
+    <!-- About, Privacy, Disclaimer 內容（用 anchor 跳轉） -->
+    <div id="about" style="margin-top:60px;padding:20px;background:white;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+        <h2>About Poop Log Tracker</h2>
+        <p>This is a free, completely private web tool designed to help you track your bowel movement frequency. All data is stored only in your browser's local storage — nothing is sent to any server.</p>
+        <p>Tracking can help identify patterns related to diet, stress, or health conditions.</p>
+    </div>
+
+    <div id="privacy" style="margin-top:40px;padding:20px;background:white;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+        <h2>Privacy Policy</h2>
+        <p>We do not collect, store, or share any personal data. All records are saved locally in your browser using localStorage and are never transmitted anywhere.</p>
+        <p>No cookies, no tracking, no analytics.</p>
+        <p>Last updated: December 2025</p>
+    </div>
+
+    <div id="disclaimer" style="margin-top:40px;padding:20px;background:white;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+        <h2>Medical Disclaimer</h2>
+        <p>This tool is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions regarding a medical condition.</p>
+    </div>
+
+    <!-- flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        const STORAGE_KEY = 'poopRecords';
+        const picker = flatpickr("#poopTime", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: false,
+            locale: { firstDayOfWeek: 0, weekdays: { shorthand: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"] }, months: { shorthand: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"] } }
+        });
+
+        function loadRecords() {
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            if (records.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="no-data">No records yet. Start by logging your first one!</td></tr>';
+                return;
+            }
+            records.forEach((record, index) => {
+                const tr = document.createElement('tr');
+                const tdIndex = document.createElement('td'); tdIndex.textContent = index + 1; tr.appendChild(tdIndex);
+                const tdTime = document.createElement('td');
+                const date = new Date(record.time);
+                tdTime.textContent = date.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
+                tr.appendChild(tdTime);
+                const tdInterval = document.createElement('td');
+                if (index === records.length - 1) {
+                    tdInterval.textContent = '- (First record)';
+                } else {
+                    const prevTime = new Date(records[index + 1].time);
+                    const diffMs = date - prevTime;
+                    const days = Math.floor(diffMs / 86400000);
+                    const hours = Math.floor((diffMs % 86400000) / 3600000);
+                    tdInterval.textContent = days > 0 ? `${days} day${days > 1 ? 's' : ''} ${hours} hour${hours !== 1 ? 's' : ''}` : `${hours} hour${hours !== 1 ? 's' : ''}`;
+                }
+                tr.appendChild(tdInterval);
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addRecord() {
+            const timeStr = picker.input.value;
+            if (!timeStr) { alert('Please select a date and time!'); return; }
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            records.unshift({ time: picker.selectedDates[0].toISOString().slice(0,16).replace('T', ' ') });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            picker.clear();
+            loadRecords();
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to delete all records?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                loadRecords();
+            }
+        }
+
+        window.onload = loadRecords;
+    </script>
+</body>
+</html>
