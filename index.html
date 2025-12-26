@@ -27,10 +27,10 @@
 </head>
 <body>
     <h1>💩 Poop Log Tracker</h1>
-    <p style="text-align:center;">A simple, private tool to track your bowel movements.</p>
+    <p style="text-align:center;">A simple, private tool to track your bowel movements for better gut health.</p>
 
     <div class="input-area">
-        <label for="poopTime">Last bowel movement time:</label><br><br>
+        <label for="poopTime">Last bowel movement time:</label>
         <input type="text" id="poopTime" class="flatpickr-input" placeholder="Click to select date and time">
         <button onclick="addRecord()">Log</button>
         <br><br>
@@ -49,7 +49,7 @@
     </table>
 
     <div class="disclaimer">
-        <strong>Disclaimer:</strong> This tool is for personal tracking only and is not medical advice. Consult a healthcare professional for health concerns.
+        <strong>Disclaimer:</strong> This tool is for personal tracking only and is not medical advice. Consult a healthcare professional for any health concerns.
     </div>
 
     <footer>
@@ -58,18 +58,20 @@
 
     <div id="about" class="section">
         <h2>About Poop Log Tracker</h2>
-        <p>This free tool helps track bowel movement frequency. All data stored locally in your browser — no servers involved.</p>
+        <p>This is a free, private web tool to help you track bowel movement frequency. All data is stored locally in your browser using localStorage — nothing is sent to servers.</p>
+        <p>Tracking can help identify patterns related to diet, stress, or health conditions.</p>
     </div>
 
     <div id="privacy" class="section">
         <h2>Privacy Policy</h2>
-        <p>No personal data collected or shared. Records saved in localStorage only.</p>
+        <p>We do not collect, store, or share any personal data. Records are saved only in your browser and never transmitted.</p>
+        <p>No cookies, no tracking, no analytics.</p>
         <p>Last updated: December 2025</p>
     </div>
 
     <div id="disclaimer" class="section">
         <h2>Medical Disclaimer</h2>
-        <p>Not a substitute for professional medical advice. Seek doctor for any health issues.</p>
+        <p>This tool is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions regarding a medical condition.</p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -114,7 +116,7 @@
                     const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     tdInterval.textContent = days > 0 ? `${days} day${days > 1 ? 's' : ''} ${hours} hour${hours !== 1 ? 's' : ''}` : `${hours} hour${hours !== 1 ? 's' : ''}`;
                 }
-                tr.appendChild(tdInterval);  
+                tr.appendChild(tdInterval);
                 tbody.appendChild(tr);
             });
         }
